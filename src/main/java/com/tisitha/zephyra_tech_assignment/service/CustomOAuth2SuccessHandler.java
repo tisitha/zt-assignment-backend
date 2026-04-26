@@ -74,7 +74,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .secure(true)
                 .path("/api/auth/c")
                 .maxAge(60 * 60 * 24 * 60)
-                .sameSite("strict")
+                .sameSite("none")
                 .build();
 
         ResponseCookie cookieAccessToken = ResponseCookie.from("access_token", accessToken)
@@ -82,7 +82,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .secure(true)
                 .path("/")
                 .maxAge(60 * 15)
-                .sameSite("strict")
+                .sameSite("none")
                 .build();
 
         ResponseCookie cookieAccountType = ResponseCookie.from("account_type", "standard")
@@ -90,7 +90,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .secure(true)
                 .path("/")
                 .maxAge(60 * 60 * 24 * 60)
-                .sameSite("strict")
+                .sameSite("none")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookieRefreshToken.toString());
