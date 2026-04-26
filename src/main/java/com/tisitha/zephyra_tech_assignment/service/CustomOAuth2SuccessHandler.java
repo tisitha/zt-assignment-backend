@@ -77,7 +77,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .secure(true)
                 .path("/api/auth/c")
                 .maxAge(60 * 60 * 24 * 60)
-                .sameSite("strict")
+                .sameSite("none")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
