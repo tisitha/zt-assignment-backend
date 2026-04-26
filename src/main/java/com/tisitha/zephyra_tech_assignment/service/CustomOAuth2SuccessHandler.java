@@ -61,7 +61,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 });
 
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
-        String accessToken = jwtUtil.generateAccessToken(user.getEmail());
 
         RefreshToken refreshTokenData = new RefreshToken();
         refreshTokenData.setTokenHash(TokenHashUtil.hash(refreshToken));
@@ -69,34 +68,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         refreshTokenData.setExpiryTime(Instant.now().plus(Duration.ofDays(60)));
         refreshTokenRepository.save(refreshTokenData);
 
-        ResponseCookie cookieRefreshToken = ResponseCookie.from("refresh_token", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/api/auth/c")
-                .maxAge(60 * 60 * 24 * 60)
-                .sameSite("none")
-                .build();
-
-        ResponseCookie cookieAccessToken = ResponseCookie.from("access_token", accessToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(60 * 15)
-                .sameSite("none")
-                .build();
-
-        ResponseCookie cookieAccountType = ResponseCookie.from("account_type", "standard")
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(60 * 60 * 24 * 60)
-                .sameSite("none")
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, cookieRefreshToken.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, cookieAccessToken.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, cookieAccountType.toString());
-
-        getRedirectStrategy().sendRedirect(request, response, frontendUrl+"account/google/callback");
+        getRedirectStrategy().sendRedirect(request, response, frontendUrl+"api/auth/google?code="+refreshToken);
     }
 }
