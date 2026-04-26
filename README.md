@@ -1,6 +1,5 @@
 ## Environment Variables
 
-Set these in `.env`:
 ````
 SERVER_PORT=8080
 
