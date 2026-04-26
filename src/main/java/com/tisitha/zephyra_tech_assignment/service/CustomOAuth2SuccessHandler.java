@@ -77,11 +77,11 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .secure(true)
                 .path("/api/auth/c")
                 .maxAge(60 * 60 * 24 * 60)
-                .sameSite("none")
+                .sameSite("strict")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        getRedirectStrategy().sendRedirect(request, response, frontendUrl+"account/google/callback?code="+accessToken);
+        getRedirectStrategy().sendRedirect(request, response, frontendUrl+"api/auth/c/google?code="+accessToken);
     }
 }
