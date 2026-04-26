@@ -21,9 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -72,16 +69,34 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         refreshTokenData.setExpiryTime(Instant.now().plus(Duration.ofDays(60)));
         refreshTokenRepository.save(refreshTokenData);
 
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
+        ResponseCookie cookieRefreshToken = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
                 .secure(true)
                 .path("/api/auth/c")
                 .maxAge(60 * 60 * 24 * 60)
-                .sameSite("none")
+                .sameSite("strict")
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        ResponseCookie cookieAccessToken = ResponseCookie.from("access_token", accessToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(60 * 15)
+                .sameSite("strict")
+                .build();
 
-        getRedirectStrategy().sendRedirect(request, response, frontendUrl+"api/auth/c/google?code="+accessToken);
+        ResponseCookie cookieAccountType = ResponseCookie.from("account_type", "standard")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(60 * 60 * 24 * 60)
+                .sameSite("strict")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieRefreshToken.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieAccessToken.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieAccountType.toString());
+
+        getRedirectStrategy().sendRedirect(request, response, frontendUrl+"account/google/callback");
     }
 }
